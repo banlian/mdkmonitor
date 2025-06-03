@@ -88,8 +88,8 @@ export default function Home() {
                           <span className="text-gray-400">{key}:</span> <span className="text-gray-300">{String(value)}</span>
                         </p>
                       ));
-                    } catch (e) {
-                      return <p className="text-sm text-red-400">Invalid JSON format</p>;
+                    } catch (error) {
+                      return <p className="text-sm text-red-400">Invalid JSON format: {error instanceof Error ? error.message : 'Unknown error'}</p>;
                     }
                   })()}
                 </div>
