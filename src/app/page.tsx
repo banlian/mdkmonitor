@@ -10,8 +10,8 @@ interface Machine {
   status: string;
   onlinetime: Date;
   offlinetime: Date;
-  globalvar: string;
-  defectssettings: string;
+  globalvars: string;
+  defectsettings: string;
   systemsettings: string;
 }
 
@@ -56,27 +56,46 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-gray-50">
-      <h1 className="text-3xl font-bold mb-6">Machine Monitor</h1>
+    <main className="min-h-screen p-8 bg-black text-white">
+      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Machine Monitor</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {machines.map((machine) => (
           <div
             key={machine.id}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="bg-gray-900/50 backdrop-blur-xl p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50"
           >
-            <h2 className="text-xl font-semibold mb-2">{machine.name}</h2>
-            <div className="space-y-2 text-gray-600">
-              <p><span className="font-medium">Type:</span> {machine.type}</p>
-              <p><span className="font-medium">Location:</span> {machine.location}</p>
-              <p><span className="font-medium">Status:</span> 
-                <span className={`ml-2 px-2 py-1 rounded text-sm ${
-                  machine.status === 'online' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            <h2 className="text-xl font-semibold mb-4 text-white">{machine.name}</h2>
+            <div className="space-y-3 text-gray-300">
+              <p><span className="font-medium text-gray-400">Type:</span> {machine.type}</p>
+              <p><span className="font-medium text-gray-400">Location:</span> {machine.location}</p>
+              <p><span className="font-medium text-gray-400">Status:</span> 
+                <span className={`ml-2 px-2 py-1 rounded-full text-sm ${
+                  machine.status === 'online' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                 }`}>
                   {machine.status}
                 </span>
               </p>
-              <p><span className="font-medium">Last Online:</span> {new Date(machine.onlinetime).toLocaleString()}</p>
-              <p><span className="font-medium">Last Offline:</span> {new Date(machine.offlinetime).toLocaleString()}</p>
+              <p><span className="font-medium text-gray-400">Last Online:</span> {new Date(machine.onlinetime).toLocaleString()}</p>
+              <p><span className="font-medium text-gray-400">Last Offline:</span> {new Date(machine.offlinetime).toLocaleString()}</p>
+              <div>
+                <span className="font-medium text-gray-400">Global Variables:</span>
+                <div className="ml-4 mt-1 max-h-[200px] overflow-y-auto bg-gray-800/30 rounded-lg p-2">
+                  {(() => {
+                    try {
+                      const globalVars = JSON.parse(machine.globalvars);
+                      return Object.entries(globalVars).map(([key, value]) => (
+                        <p key={key} className="text-sm py-1 border-b border-gray-800/50 last:border-0">
+                          <span className="text-gray-400">{key}:</span> <span className="text-gray-300">{String(value)}</span>
+                        </p>
+                      ));
+                    } catch (e) {
+                      return <p className="text-sm text-red-400">Invalid JSON format</p>;
+                    }
+                  })()}
+                </div>
+              </div>
+              <p><span className="font-medium text-gray-400">Defects Settings:</span> {machine.defectsettings}</p>
+              <p><span className="font-medium text-gray-400">System Settings:</span> {machine.systemsettings}</p>
             </div>
           </div>
         ))}
