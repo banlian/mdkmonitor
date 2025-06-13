@@ -21,6 +21,14 @@ const formatBeijingTime = (isoString: string) => {
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
 
+// Function to check if time is within 10 minutes
+const isWithin10Minutes = (isoString: string) => {
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffInMinutes = Math.abs((now.getTime() - date.getTime()) / (1000 * 60));
+  return diffInMinutes <= 10;
+};
+
 export default function Home() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,17 +72,16 @@ export default function Home() {
   };
 
   const handleDelete = async (name: string) => {
-
     const password = prompt("Please enter admin password to delete:");
     if (!password) {
       return;
     }
-    
-    if (password !== "520980") { // You should use a more secure password in production
+
+    if (password !== "520980") {
+      // You should use a more secure password in production
       alert("Incorrect password");
       return;
     }
-
 
     if (!confirm("Are you sure you want to delete this machine?")) {
       return;
@@ -125,7 +132,9 @@ export default function Home() {
         {machines.map((machine) => (
           <div
             key={machine.id}
-            className="bg-gray-900/50 backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50"
+            className={`bg-gray-900/50 backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50 ${
+              isWithin10Minutes(machine.onlinetime) ? 'bg-green-900/50' : 'bg-gray-900/50'
+            }`}
           >
             <h2 className="text-lg font-semibold mb-3 text-white">
               {machine.name}
