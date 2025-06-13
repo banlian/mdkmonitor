@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface Machine {
   id: number;
@@ -8,29 +8,46 @@ interface Machine {
   type: string;
   location: string;
   status: string;
-  onlinetime: Date;
-  offlinetime: Date;
+  onlinetime: string;
+  offlinetime: string;
   globalvars: string;
   defectsettings: string;
   systemsettings: string;
 }
 
+// Utility function to format ISO date string to Beijing time
+const formatBeijingTime = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
+};
+
 export default function Home() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTabs, setActiveTabs] = useState<{ [key: number]: string }>({});
+  const [deletingName, setDeletingName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMachines = async () => {
       try {
-        const response = await fetch('/api/machines');
+        const response = await fetch("/api/machines");
         if (!response.ok) {
-          throw new Error('Failed to fetch machines');
+          throw new Error("Failed to fetch machines");
         }
         const data = await response.json();
         setMachines(data);
+        // Initialize all machines to show basic info tab
+        const initialTabs = data.reduce(
+          (acc: { [key: number]: string }, machine: Machine) => {
+            acc[machine.id] = "basic";
+            return acc;
+          },
+          {}
+        );
+        setActiveTabs(initialTabs);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -38,6 +55,50 @@ export default function Home() {
 
     fetchMachines();
   }, []);
+
+  const handleTabChange = (machineId: number, tab: string) => {
+    setActiveTabs((prev) => ({
+      ...prev,
+      [machineId]: tab,
+    }));
+  };
+
+  const handleDelete = async (name: string) => {
+
+    const password = prompt("Please enter admin password to delete:");
+    if (!password) {
+      return;
+    }
+    
+    if (password !== "520980") { // You should use a more secure password in production
+      alert("Incorrect password");
+      return;
+    }
+
+
+    if (!confirm("Are you sure you want to delete this machine?")) {
+      return;
+    }
+
+    setDeletingName(name);
+    try {
+      const response = await fetch(`/api/machines?name=${name}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete machine");
+      }
+
+      setMachines((prevMachines) =>
+        prevMachines.filter((machine) => machine.name !== name)
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete machine");
+    } finally {
+      setDeletingName(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -57,45 +118,166 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8 bg-black text-white">
-      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Machine Monitor</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        Machine Monitor
+      </h1>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {machines.map((machine) => (
           <div
             key={machine.id}
-            className="bg-gray-900/50 backdrop-blur-xl p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50"
+            className="bg-gray-900/50 backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50"
           >
-            <h2 className="text-xl font-semibold mb-4 text-white">{machine.name}</h2>
-            <div className="space-y-3 text-gray-300">
-              <p><span className="font-medium text-gray-400">Type:</span> {machine.type}</p>
-              <p><span className="font-medium text-gray-400">Location:</span> {machine.location}</p>
-              <p><span className="font-medium text-gray-400">Status:</span> 
-                <span className={`ml-2 px-2 py-1 rounded-full text-sm ${
-                  machine.status === 'online' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                }`}>
-                  {machine.status}
+            <h2 className="text-lg font-semibold mb-3 text-white">
+              {machine.name}
+            </h2>
+
+            {/* Delete button */}
+            <button
+              onClick={() => handleDelete(machine.name)}
+              disabled={deletingName === machine.name}
+              className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-400 disabled:opacity-50"
+              title="Delete machine"
+            >
+              {deletingName === machine.name ? (
+                <span className="animate-spin">⌛</span>
+              ) : (
+                "×"
+              )}
+            </button>
+
+            {/*machine status / online time */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    machine.status === "1" ? "bg-green-500" : "bg-red-500"
+                  }`}
+                />
+                <span className="text-sm text-gray-400">
+                  {machine.status === "1" ? "Running" : "Offline"}
                 </span>
-              </p>
-              <p><span className="font-medium text-gray-400">Last Online:</span> {new Date(machine.onlinetime).toLocaleString()}</p>
-              <p><span className="font-medium text-gray-400">Last Offline:</span> {new Date(machine.offlinetime).toLocaleString()}</p>
-              <div>
-                <span className="font-medium text-gray-400">Global Variables:</span>
-                <div className="ml-4 mt-1 max-h-[200px] overflow-y-auto bg-gray-800/30 rounded-lg p-2">
-                  {(() => {
-                    try {
-                      const globalVars = JSON.parse(machine.globalvars);
-                      return Object.entries(globalVars).map(([key, value]) => (
-                        <p key={key} className="text-sm py-1 border-b border-gray-800/50 last:border-0">
-                          <span className="text-gray-400">{key}:</span> <span className="text-gray-300">{String(value)}</span>
-                        </p>
-                      ));
-                    } catch (error) {
-                      return <p className="text-sm text-red-400">Invalid JSON format: {error instanceof Error ? error.message : 'Unknown error'}</p>;
-                    }
-                  })()}
-                </div>
               </div>
-              <p><span className="font-medium text-gray-400">Defects Settings:</span> {machine.defectsettings}</p>
-              <p><span className="font-medium text-gray-400">System Settings:</span> {machine.systemsettings}</p>
+              <span className="text-xs text-gray-500">
+                {formatBeijingTime(machine.onlinetime)}
+              </span>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex space-x-1 mb-3">
+              <button
+                onClick={() => handleTabChange(machine.id, "basic")}
+                className={`px-2 py-1 text-xs rounded ${
+                  activeTabs[machine.id] === "basic"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                Basic
+              </button>
+              <button
+                onClick={() => handleTabChange(machine.id, "defects")}
+                className={`px-2 py-1 text-xs rounded ${
+                  activeTabs[machine.id] === "defects"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                Defects
+              </button>
+              <button
+                onClick={() => handleTabChange(machine.id, "system")}
+                className={`px-2 py-1 text-xs rounded ${
+                  activeTabs[machine.id] === "system"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                System
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="space-y-2 text-sm">
+              {activeTabs[machine.id] === "basic" && (
+                <>
+                  <p>
+                    <span className="font-medium text-gray-400">Type:</span>{" "}
+                    {machine.type}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-400">Location:</span>{" "}
+                    {machine.location}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-400">Status:</span>
+                    <span
+                      className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                        machine.status === "online"
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-red-500/20 text-red-400"
+                      }`}
+                    >
+                      {machine.status}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-400">
+                      Last Online:
+                    </span>{" "}
+                    {formatBeijingTime(machine.onlinetime)}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-400">
+                      Last Offline:
+                    </span>{" "}
+                    {formatBeijingTime(machine.offlinetime)}
+                  </p>
+                </>
+              )}
+
+              {activeTabs[machine.id] === "defects" && (
+                <div className="max-h-[200px] overflow-y-auto">
+                  <pre className="text-xs whitespace-pre-wrap">
+                    {machine.defectsettings}
+                  </pre>
+                </div>
+              )}
+
+              {activeTabs[machine.id] === "system" && (
+                <div className="max-h-[200px] overflow-y-auto">
+                  <div>
+                    <span className="font-medium text-gray-400">
+                      Global Variables:
+                    </span>
+                    <div className="ml-2 mt-1 max-h-[100px] overflow-y-auto bg-gray-800/30 rounded-lg p-1">
+                      {(() => {
+                        try {
+                          const globalVars = JSON.parse(machine.globalvars);
+                          return Object.entries(globalVars).map(
+                            ([key, value]) => (
+                              <p
+                                key={key}
+                                className="text-xs py-0.5 border-b border-gray-800/50 last:border-0"
+                              >
+                                <span className="text-gray-400">{key}:</span>{" "}
+                                <span className="text-gray-300">
+                                  {String(value)}
+                                </span>
+                              </p>
+                            )
+                          );
+                        } catch (error) {
+                          return (
+                            <p className="text-xs text-red-400">
+                              Invalid JSON format
+                            </p>
+                          );
+                        }
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
