@@ -18,14 +18,29 @@ interface Machine {
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
   const date = new Date(isoString);
+  // Add 8 hours to convert from UTC to UTC+8
+  date.setHours(date.getHours());
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
 
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
   const date = new Date(isoString);
+  // Add 8 hours to convert from UTC to UTC+8
+  date.setHours(date.getHours());
   const now = new Date();
-  const diffInMinutes = Math.abs((now.getTime() - date.getTime()) / (1000 * 60));
+  // Add 8 hours to current time to match UTC+8
+  now.setHours(now.getHours());
+
+  console.log(
+    "compare ",
+    date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }),
+    now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
+  );
+
+  const diffInMinutes = Math.abs(
+    (now.getTime() - date.getTime()) / (1000 * 60)
+  );
   return diffInMinutes <= 10;
 };
 
@@ -133,7 +148,9 @@ export default function Home() {
           <div
             key={machine.id}
             className={`bg-gray-900/50 backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-800/50 ${
-              isWithin10Minutes(machine.onlinetime) ? 'bg-green-900/50' : 'bg-gray-900/50'
+              isWithin10Minutes(machine.onlinetime)
+                ? "bg-green-900/50"
+                : "bg-gray-900/50"
             }`}
           >
             <h2 className="text-lg font-semibold mb-3 text-white">
@@ -278,7 +295,10 @@ export default function Home() {
                         } catch (error) {
                           return (
                             <p className="text-xs text-red-400">
-                              Invalid JSON format: {error instanceof Error ? error.message : 'Unknown error'}
+                              Invalid JSON format:{" "}
+                              {error instanceof Error
+                                ? error.message
+                                : "Unknown error"}
                             </p>
                           );
                         }
