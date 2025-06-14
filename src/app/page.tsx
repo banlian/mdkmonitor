@@ -33,14 +33,27 @@ const getMachineStatusColor = (status: string) => {
 
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
+  // Since the ISO string is already in UTC+8, we don't need to convert timezone
   const date = new Date(isoString);
-  return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
+  
+  // Format the date in Chinese locale without timezone conversion
+  return date.toLocaleString("zh-CN", {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
 };
 
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
-  const date = new Date(isoString);
+  // Convert ISO string (UTC+8) to UTC by subtracting 8 hours
+  const date = new Date(new Date(isoString).getTime() - 8 * 60 * 60 * 1000);
   const now = new Date();
+
   
   // Convert both times to Beijing time for comparison
   const beijingDate = new Date(date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }));
@@ -235,15 +248,15 @@ export default function Home() {
               {activeTabs[machine.id] === "basic" && (
                 <>
                   <p>
-                    <span className="font-medium text-gray-400">Type:</span>{" "}
+                    <span className="font-medium text-gray-400">版本:</span>{" "}
                     {machine.type}
                   </p>
                   <p>
-                    <span className="font-medium text-gray-400">Location:</span>{" "}
+                    <span className="font-medium text-gray-400">位置:</span>{" "}
                     {machine.location}
                   </p>
                   <p>
-                    <span className="font-medium text-gray-400">Status:</span>
+                    <span className="font-medium text-gray-400">状态:</span>
                     <span
                       className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
                         getMachineStatusColor(machine.status)
@@ -254,15 +267,9 @@ export default function Home() {
                   </p>
                   <p>
                     <span className="font-medium text-gray-400">
-                      Last Online:
+                      刷新时间:
                     </span>{" "}
                     {formatBeijingTime(machine.onlinetime)}
-                  </p>
-                  <p>
-                    <span className="font-medium text-gray-400">
-                      Last Offline:
-                    </span>{" "}
-                    {formatBeijingTime(machine.offlinetime)}
                   </p>
                 </>
               )}
