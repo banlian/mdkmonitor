@@ -278,7 +278,7 @@ export default function Home() {
                         } catch (error) {
                           return (
                             <p className="text-xs text-red-400">
-                              Invalid JSON format
+                              Invalid JSON format: {error instanceof Error ? error.message : 'Unknown error'}
                             </p>
                           );
                         }
