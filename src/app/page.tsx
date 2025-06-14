@@ -24,7 +24,7 @@ const getMachineStatusString = (status: string) => {
 };
 
 //get machine color
-const getMachineStatusColor = (status: string) => { 
+const getMachineStatusColor = (status: string) => {
   if (status === "1") return "bg-green-500";
   if (status === "0") return "bg-gray-500";
   if (status === "2") return "bg-yellow-500";
@@ -34,30 +34,25 @@ const getMachineStatusColor = (status: string) => {
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
   // Since the ISO string is already in UTC+8, we don't need to convert timezone
-  const date = new Date(isoString);
-  
+  const date = new Date(new Date(isoString).getTime());
+
   // Format the date in Chinese locale without timezone conversion
-  return date.toLocaleString("zh-CN", {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  });
+  return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
 
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
   // Convert ISO string (UTC+8) to UTC by subtracting 8 hours
-  const date = new Date(new Date(isoString).getTime() - 8 * 60 * 60 * 1000);
+  const date = new Date(new Date(isoString).getTime());
   const now = new Date();
 
-  
   // Convert both times to Beijing time for comparison
-  const beijingDate = new Date(date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }));
-  const beijingNow = new Date(now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }));
+  const beijingDate = new Date(
+    date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
+  );
+  const beijingNow = new Date(
+    now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
+  );
 
   const diffInMinutes = Math.abs(
     (beijingNow.getTime() - beijingDate.getTime()) / (1000 * 60)
@@ -196,9 +191,9 @@ export default function Home() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${
-                    getMachineStatusColor(machine.status)
-                  }`}
+                  className={`w-2 h-2 rounded-full ${getMachineStatusColor(
+                    machine.status
+                  )}`}
                 />
                 <span className="text-sm text-gray-400">
                   {getMachineStatusString(machine.status)}
@@ -258,17 +253,15 @@ export default function Home() {
                   <p>
                     <span className="font-medium text-gray-400">状态:</span>
                     <span
-                      className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                        getMachineStatusColor(machine.status)
-                      }`}
+                      className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getMachineStatusColor(
+                        machine.status
+                      )}`}
                     >
                       {getMachineStatusString(machine.status)}
                     </span>
                   </p>
                   <p>
-                    <span className="font-medium text-gray-400">
-                      刷新时间:
-                    </span>{" "}
+                    <span className="font-medium text-gray-400">刷新时间:</span>{" "}
                     {formatBeijingTime(machine.onlinetime)}
                   </p>
                 </>
