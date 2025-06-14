@@ -34,28 +34,20 @@ const getMachineStatusColor = (status: string) => {
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
   const date = new Date(isoString);
-  // Add 8 hours to convert from UTC to UTC+8
-  date.setHours(date.getHours());
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
 
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
   const date = new Date(isoString);
-  // Add 8 hours to convert from UTC to UTC+8
-  date.setHours(date.getHours());
   const now = new Date();
-  // Add 8 hours to current time to match UTC+8
-  now.setHours(now.getHours());
-
-  console.log(
-    "compare ",
-    date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }),
-    now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
-  );
+  
+  // Convert both times to Beijing time for comparison
+  const beijingDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
+  const beijingNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
 
   const diffInMinutes = Math.abs(
-    (now.getTime() - date.getTime()) / (1000 * 60)
+    (beijingNow.getTime() - beijingDate.getTime()) / (1000 * 60)
   );
   return diffInMinutes <= 10;
 };
