@@ -43,8 +43,8 @@ const isWithin10Minutes = (isoString: string) => {
   const now = new Date();
   
   // Convert both times to Beijing time for comparison
-  const beijingDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
-  const beijingNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
+  const beijingDate = new Date(date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }));
+  const beijingNow = new Date(now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }));
 
   const diffInMinutes = Math.abs(
     (beijingNow.getTime() - beijingDate.getTime()) / (1000 * 60)
