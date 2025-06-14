@@ -15,6 +15,22 @@ interface Machine {
   systemsettings: string;
 }
 
+//get machine status string
+const getMachineStatusString = (status: string) => {
+  if (status === "1") return "验布中";
+  if (status === "0") return "已停止";
+  if (status === "2") return "已暂停";
+  return "未知";
+};
+
+//get machine color
+const getMachineStatusColor = (status: string) => { 
+  if (status === "1") return "bg-green-500";
+  if (status === "0") return "bg-gray-500";
+  if (status === "2") return "bg-yellow-500";
+  return "bg-gray-500";
+};
+
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
   const date = new Date(isoString);
@@ -176,11 +192,11 @@ export default function Home() {
               <div className="flex items-center space-x-2">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    machine.status === "1" ? "bg-green-500" : "bg-red-500"
+                    getMachineStatusColor(machine.status)
                   }`}
                 />
                 <span className="text-sm text-gray-400">
-                  {machine.status === "1" ? "Running" : "Offline"}
+                  {getMachineStatusString(machine.status)}
                 </span>
               </div>
               <span className="text-xs text-gray-500">
@@ -238,12 +254,10 @@ export default function Home() {
                     <span className="font-medium text-gray-400">Status:</span>
                     <span
                       className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                        machine.status === "online"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
+                        getMachineStatusColor(machine.status)
                       }`}
                     >
-                      {machine.status}
+                      {getMachineStatusString(machine.status)}
                     </span>
                   </p>
                   <p>
