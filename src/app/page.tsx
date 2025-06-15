@@ -22,19 +22,9 @@ const getMachineStatusColor = (status: string) => {
 
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
-  //utc-8 string to iso string
+
   const date = new Date(new Date(isoString).getTime());
-
-  //get time zone offset
-  const timeZoneOffset = date.getTimezoneOffset();
-  console.log(timeZoneOffset);
-
-  //normal timezone offset is 8
-  const normalTimeZoneOffset = -480;
-
-  //add time zone offset
-  date.setHours(date.getHours() - (timeZoneOffset - normalTimeZoneOffset)/60);
-
+  date.setHours(date.getHours()+8);
 
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
@@ -42,19 +32,7 @@ const formatBeijingTime = (isoString: string) => {
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
   const date = new Date(new Date(isoString).getTime());
-
-  //get time zone offset
-  const timeZoneOffset = date.getTimezoneOffset();
-  console.log(timeZoneOffset);
-
-  //normal timezone offset is 8
-  const normalTimeZoneOffset = -480;
-
-  //add time zone offset
-  date.setHours(date.getHours() - (timeZoneOffset - normalTimeZoneOffset)/60);
-
-
-
+  date.setHours(date.getHours()+8);
 
   const now = new Date();
 
@@ -212,9 +190,18 @@ export default function Home() {
               className="absolute top-2 right-10 p-1 text-blue-400 hover:text-blue-300"
               title="View details"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
 
