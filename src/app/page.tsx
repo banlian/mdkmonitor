@@ -1,19 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-interface Machine {
-  id: number;
-  name: string;
-  type: string;
-  location: string;
-  status: string;
-  onlinetime: string;
-  offlinetime: string;
-  globalvars: string;
-  defectsettings: string;
-  systemsettings: string;
-}
+import { Machine } from "./types/machine";
+import { MachineDetailsModal } from "./components/MachineDetailsModal";
 
 //get machine status string
 const getMachineStatusString = (status: string) => {
@@ -33,20 +22,25 @@ const getMachineStatusColor = (status: string) => {
 
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
-  // Since the ISO string is already in UTC+8, we don't need to convert timezone
   const date = new Date(new Date(isoString).getTime());
 
-  // Format the date in Chinese locale without timezone conversion
+  //check date time zone
+  const timeZone = date.getTimezoneOffset();
+  console.log(timeZone);
+
+  //add timezone offset
+  date.setHours(date.getHours() - timeZone / 60);
+  
+
+
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
 };
 
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
-  // Convert ISO string (UTC+8) to UTC by subtracting 8 hours
   const date = new Date(new Date(isoString).getTime());
   const now = new Date();
 
-  // Convert both times to Beijing time for comparison
   const beijingDate = new Date(
     date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
   );
@@ -66,6 +60,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [activeTabs, setActiveTabs] = useState<{ [key: number]: string }>({});
   const [deletingName, setDeletingName] = useState<string | null>(null);
+  const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
 
   useEffect(() => {
     const fetchMachines = async () => {
@@ -92,7 +87,14 @@ export default function Home() {
       }
     };
 
+    // Initial fetch
     fetchMachines();
+
+    // Set up polling every 3 minutes (180000 milliseconds)
+    const intervalId = setInterval(fetchMachines, 180000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleTabChange = (machineId: number, tab: string) => {
@@ -185,6 +187,18 @@ export default function Home() {
               ) : (
                 "×"
               )}
+            </button>
+
+            {/* View Details button */}
+            <button
+              onClick={() => setSelectedMachine(machine)}
+              className="absolute top-2 right-10 p-1 text-blue-400 hover:text-blue-300"
+              title="View details"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
             </button>
 
             {/*machine status / online time */}
@@ -317,6 +331,12 @@ export default function Home() {
           </div>
         ))}
       </div>
+      {selectedMachine && (
+        <MachineDetailsModal
+          machine={selectedMachine}
+          onClose={() => setSelectedMachine(null)}
+        />
+      )}
     </main>
   );
 }

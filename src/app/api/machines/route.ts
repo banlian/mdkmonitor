@@ -27,12 +27,13 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const qr = await pool.execute('delete from machine where name = "?"', [name]);
-    return NextResponse.json(qr);
+    const qr = await pool.execute(`delete from machine where name = '${name}'`);
+    const result = qr[0];
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch machines' },
+      { error: 'Failed to delete machine' },
       { status: 500 }
     );
   }
