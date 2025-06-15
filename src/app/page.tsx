@@ -22,15 +22,18 @@ const getMachineStatusColor = (status: string) => {
 
 // Utility function to format ISO date string to Beijing time
 const formatBeijingTime = (isoString: string) => {
+  //utc-8 string to iso string
   const date = new Date(new Date(isoString).getTime());
 
-  //check date time zone
-  const timeZone = date.getTimezoneOffset();
-  console.log(timeZone);
+  //get time zone offset
+  const timeZoneOffset = date.getTimezoneOffset();
+  console.log(timeZoneOffset);
 
-  //add timezone offset
-  date.setHours(date.getHours() - timeZone / 60);
-  
+  //normal timezone offset is 8
+  const normalTimeZoneOffset = -480;
+
+  //add time zone offset
+  date.setHours(date.getHours() - (timeZoneOffset - normalTimeZoneOffset)/60);
 
 
   return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
@@ -39,6 +42,20 @@ const formatBeijingTime = (isoString: string) => {
 // Function to check if time is within 10 minutes
 const isWithin10Minutes = (isoString: string) => {
   const date = new Date(new Date(isoString).getTime());
+
+  //get time zone offset
+  const timeZoneOffset = date.getTimezoneOffset();
+  console.log(timeZoneOffset);
+
+  //normal timezone offset is 8
+  const normalTimeZoneOffset = -480;
+
+  //add time zone offset
+  date.setHours(date.getHours() - (timeZoneOffset - normalTimeZoneOffset)/60);
+
+
+
+
   const now = new Date();
 
   const beijingDate = new Date(
