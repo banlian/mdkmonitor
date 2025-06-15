@@ -26,13 +26,9 @@ const formatBeijingTime = (isoString: string) => {
   //if development, add 8 hours
   if (process.env.NODE_ENV === "production") {
     const date = new Date(new Date(isoString).getTime() - 8 * 60 * 60 * 1000);
-
-    date.setHours(date.getHours() + 8);
-
     return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
   } else {
     const date = new Date(new Date(isoString).getTime());
-
     return date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
   }
 };
@@ -43,9 +39,7 @@ const isWithin10Minutes = (isoString: string) => {
   //if development, add 8 hours
   if (process.env.NODE_ENV === "production") {
     const date = new Date(new Date(isoString).getTime() - 8 * 60 * 60 * 1000);
-
     const now = new Date();
-
     const beijingDate = new Date(
       date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
     );
@@ -59,16 +53,13 @@ const isWithin10Minutes = (isoString: string) => {
     return diffInMinutes <= 10;
   } else {
     const date = new Date(new Date(isoString).getTime());
-
     const now = new Date();
-
     const beijingDate = new Date(
       date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
     );
     const beijingNow = new Date(
       now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
     );
-
     const diffInMinutes = Math.abs(
       (beijingNow.getTime() - beijingDate.getTime()) / (1000 * 60)
     );
