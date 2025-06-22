@@ -9,4 +9,5 @@ export interface Machine {
   globalvars: string;
   defectsettings: string;
   systemsettings: string;
+  todaystat: string;
 } 
