@@ -5,6 +5,8 @@ import { Machine } from "./types/machine";
 import { MachineDetailsModal } from "./components/MachineDetailsModal";
 import { TodayStatsModal } from "./components/TodayStatsModal";
 import { MachineCard } from "./components/MachineCard";
+import { ClientWrapper } from "./components/ClientWrapper";
+import { getBuildDate } from "../lib/build-info";
 
 export default function Home() {
   const [machines, setMachines] = useState<Machine[]>([]);
@@ -103,51 +105,62 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
+      <ClientWrapper>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-xl">Loading...</div>
+        </div>
+      </ClientWrapper>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">Error: {error}</div>
-      </div>
+      <ClientWrapper>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-xl text-red-500">Error: {error}</div>
+        </div>
+      </ClientWrapper>
     );
   }
 
   return (
-    <main className="min-h-screen p-8 bg-black text-white">
-      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-        Machine Monitor
-      </h1>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {machines.map((machine) => (
-          <MachineCard
-            key={machine.id}
-            machine={machine}
-            activeTab={activeTabs[machine.id]}
-            onTabChange={handleTabChange}
-            onDelete={handleDelete}
-            onViewDetails={handleViewDetails}
-            onViewTodayStats={handleViewTodayStats}
-            deletingName={deletingName}
+    <ClientWrapper>
+      <main className="min-h-screen p-8 bg-black text-white">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            Machine Monitor
+          </h1>
+          <div className="text-sm text-gray-400">
+            Build: {getBuildDate()}
+          </div>
+        </div>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          {machines.map((machine) => (
+            <MachineCard
+              key={machine.id}
+              machine={machine}
+              activeTab={activeTabs[machine.id]}
+              onTabChange={handleTabChange}
+              onDelete={handleDelete}
+              onViewDetails={handleViewDetails}
+              onViewTodayStats={handleViewTodayStats}
+              deletingName={deletingName}
+            />
+          ))}
+        </div>
+        {selectedMachine && (
+          <MachineDetailsModal
+            machine={selectedMachine}
+            onClose={() => setSelectedMachine(null)}
           />
-        ))}
-      </div>
-      {selectedMachine && (
-        <MachineDetailsModal
-          machine={selectedMachine}
-          onClose={() => setSelectedMachine(null)}
-        />
-      )}
-      {todayStatsMachine && (
-        <TodayStatsModal
-          machine={todayStatsMachine}
-          onClose={() => setTodayStatsMachine(null)}
-        />
-      )}
-    </main>
+        )}
+        {todayStatsMachine && (
+          <TodayStatsModal
+            machine={todayStatsMachine}
+            onClose={() => setTodayStatsMachine(null)}
+          />
+        )}
+      </main>
+    </ClientWrapper>
   );
 }

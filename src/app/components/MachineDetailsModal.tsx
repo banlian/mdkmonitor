@@ -1,4 +1,7 @@
+"use client";
+
 import { Machine } from "../types/machine";
+import { useEffect, useState } from "react";
 
 interface MachineDetailsModalProps {
   machine: Machine;
@@ -28,6 +31,16 @@ const getMachineStatusColor = (status: string) => {
 };
 
 export const MachineDetailsModal = ({ machine, onClose }: MachineDetailsModalProps) => {
+  const [isClient, setIsClient] = useState(false);
+  const [formattedOnlineTime, setFormattedOnlineTime] = useState("");
+  const [formattedOfflineTime, setFormattedOfflineTime] = useState("");
+
+  useEffect(() => {
+    setIsClient(true);
+    setFormattedOnlineTime(formatBeijingTime(machine.onlinetime));
+    setFormattedOfflineTime(formatBeijingTime(machine.offlinetime));
+  }, [machine.onlinetime, machine.offlinetime]);
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-900/95 p-6 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -54,8 +67,8 @@ export const MachineDetailsModal = ({ machine, onClose }: MachineDetailsModalPro
                     {getMachineStatusString(machine.status)}
                   </span>
                 </p>
-                <p><span className="text-gray-400">Online Time:</span> {formatBeijingTime(machine.onlinetime)}</p>
-                <p><span className="text-gray-400">Offline Time:</span> {formatBeijingTime(machine.offlinetime)}</p>
+                <p><span className="text-gray-400">Online Time:</span> {isClient ? formattedOnlineTime : "Loading..."}</p>
+                <p><span className="text-gray-400">Offline Time:</span> {isClient ? formattedOfflineTime : "Loading..."}</p>
               </div>
             </div>
             

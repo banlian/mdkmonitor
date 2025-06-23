@@ -11,7 +11,7 @@ export const TodayStatsModal = ({ machine, onClose }: TodayStatsModalProps) => {
       <div className="bg-gray-900/95 p-6 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-white">
-            {machine.name} - Today's Statistics
+            {machine.name} - Today&apos;s Statistics
           </h2>
           <button
             onClick={onClose}
@@ -24,7 +24,7 @@ export const TodayStatsModal = ({ machine, onClose }: TodayStatsModalProps) => {
         <div className="space-y-4">
           <div className="bg-gray-800/30 rounded-lg p-4">
             <h3 className="text-gray-400 mb-3 text-lg font-semibold">
-              Today's Statistics
+              Today&apos;s Statistics
             </h3>
             <div className="max-h-[400px] overflow-y-auto">
               {machine.todaystat ? (
