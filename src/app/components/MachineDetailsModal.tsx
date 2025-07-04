@@ -46,7 +46,7 @@ export const MachineDetailsModal = ({ machine, onClose }: MachineDetailsModalPro
   const parseSystemSettings = () => {
     try {
       return JSON.parse(machine.systemsettings);
-    } catch (error) {
+    } catch {
       return null;
     }
   };
@@ -203,7 +203,7 @@ export const MachineDetailsModal = ({ machine, onClose }: MachineDetailsModalPro
                   </table>
                   {filteredSystemSettings.length === 0 && (
                     <div className="text-center text-gray-500 py-4">
-                      No settings found matching "{systemSettingsSearch}"
+                      No settings found matching &quot;{systemSettingsSearch}&quot;
                     </div>
                   )}
                 </>
