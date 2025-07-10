@@ -224,9 +224,36 @@ export function MachineCard({
 
           {activeTab === "defects" && (
             <div className="max-h-[200px] overflow-y-auto">
-              <pre className="text-xs whitespace-pre-wrap">
-                {machine.defectsettings}
-              </pre>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-gray-800/50">
+                    <tr>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">代码</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">名称</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">状态</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">分数</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">MinX</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">MaxX</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">MinY</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">MaxY</th>
+                      <th className="px-2 py-1 text-left text-gray-300 font-medium">自动</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-700/50 animate-pulse">
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-8"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-12"></div></td>
+                      <td className="px-2 py-1"><div className="h-4 bg-gray-600 rounded w-8"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                      <td className="px-2 py-1"><div className="h-3 bg-gray-600 rounded w-6"></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
@@ -269,39 +296,7 @@ export function MachineCard({
             </div>
           )}
 
-          {activeTab === "stats" && (
-            <div className="max-h-[200px] overflow-y-auto">
-              <div className="text-xs">
-                {(() => {
-                  try {
-                    const lines = machine.todaystat.split('\n').filter(line => line.trim());
-                    return lines.map((line, index) => {
-                      if (line.includes('：')) {
-                        const [key, value] = line.split('：');
-                        return (
-                          <p key={index} className="py-0.5 border-b border-gray-800/50 last:border-0">
-                            <span className="text-gray-400">{key?.trim()}:</span>{" "}
-                            <span className="text-gray-300">{value?.trim()}</span>
-                          </p>
-                        );
-                      }
-                      return (
-                        <p key={index} className="py-0.5 text-gray-300">
-                          {line}
-                        </p>
-                      );
-                    });
-                  } catch {
-                    return (
-                      <p className="text-xs text-red-400">
-                        Error parsing statistics
-                      </p>
-                    );
-                  }
-                })()}
-              </div>
-            </div>
-          )}
+         
         </div>
       </div>
     );
@@ -405,26 +400,7 @@ export function MachineCard({
         >
           System
         </button>
-        <button
-          onClick={() => onTabChange(machine.id, "stats")}
-          className={`px-2 py-1 text-xs rounded ${
-            activeTab === "stats"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-          }`}
-        >
-          Stats
-        </button>
-        <button
-          onClick={() => onTabChange(machine.id, "stats")}
-          className={`px-2 py-1 text-xs rounded ${
-            activeTab === "stats"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-          }`}
-        >
-          Stats
-        </button>
+      
       </div>
 
       {/* Tab Content */}
@@ -458,9 +434,63 @@ export function MachineCard({
 
         {activeTab === "defects" && (
           <div className="max-h-[200px] overflow-y-auto">
-            <pre className="text-xs whitespace-pre-wrap">
-              {machine.defectsettings}
-            </pre>
+            {(() => {
+              try {
+                const defectSettings = JSON.parse(machine.defectsettings);
+                return (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead className="bg-gray-800/50 sticky top-0">
+                        <tr>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">代码</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">名称</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">状态</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">分数</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">MinX</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">MaxX</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">MinY</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">MaxY</th>
+                          <th className="px-2 py-1 text-left text-gray-300 font-medium">自动</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(defectSettings).map(([defectCode, defectData]) => {
+                          const [defectName, enabled, sensitivity, minxSize, maxxSize, minySize, maxySize, autoenable] = defectData as string[];
+                          return (
+                            <tr key={defectCode} className="border-b border-gray-700/50 hover:bg-gray-800/30">
+                              <td className="px-2 py-1 text-blue-200 font-medium">{defectCode}</td>
+                              <td className="px-2 py-1 text-gray-200">{defectName}</td>
+                              <td className="px-2 py-1">
+                                <span className={`px-2 py-0.5 rounded text-xs ${
+                                  enabled === "1" ? "bg-green-600/50 text-green-200" : "bg-red-600/50 text-red-200"
+                                }`}>
+                                  {enabled === "1" ? "1" : "0"}
+                                </span>
+                              </td>
+                              <td className="px-2 py-1 text-gray-300">{sensitivity}</td>
+                              <td className="px-2 py-1 text-gray-300">{minxSize}</td>
+                              <td className="px-2 py-1 text-gray-300">{maxxSize}</td>
+                              <td className="px-2 py-1 text-gray-300">{minySize}</td>
+                              <td className="px-2 py-1 text-gray-300">{maxySize}</td>
+                              <td className="px-2 py-1 text-gray-300">{autoenable}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              } catch (error) {
+                return (
+                  <div className="text-xs text-red-400">
+                    <p>Invalid JSON format: {error instanceof Error ? error.message : "Unknown error"}</p>
+                    <pre className="mt-2 whitespace-pre-wrap text-gray-500">
+                      {machine.defectsettings}
+                    </pre>
+                  </div>
+                );
+              }
+            })()}
           </div>
         )}
 
