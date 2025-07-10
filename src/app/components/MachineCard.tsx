@@ -268,6 +268,40 @@ export function MachineCard({
               </div>
             </div>
           )}
+
+          {activeTab === "stats" && (
+            <div className="max-h-[200px] overflow-y-auto">
+              <div className="text-xs">
+                {(() => {
+                  try {
+                    const lines = machine.todaystat.split('\n').filter(line => line.trim());
+                    return lines.map((line, index) => {
+                      if (line.includes('：')) {
+                        const [key, value] = line.split('：');
+                        return (
+                          <p key={index} className="py-0.5 border-b border-gray-800/50 last:border-0">
+                            <span className="text-gray-400">{key?.trim()}:</span>{" "}
+                            <span className="text-gray-300">{value?.trim()}</span>
+                          </p>
+                        );
+                      }
+                      return (
+                        <p key={index} className="py-0.5 text-gray-300">
+                          {line}
+                        </p>
+                      );
+                    });
+                  } catch {
+                    return (
+                      <p className="text-xs text-red-400">
+                        Error parsing statistics
+                      </p>
+                    );
+                  }
+                })()}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -370,6 +404,26 @@ export function MachineCard({
           }`}
         >
           System
+        </button>
+        <button
+          onClick={() => onTabChange(machine.id, "stats")}
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "stats"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+          }`}
+        >
+          Stats
+        </button>
+        <button
+          onClick={() => onTabChange(machine.id, "stats")}
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "stats"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+          }`}
+        >
+          Stats
         </button>
       </div>
 

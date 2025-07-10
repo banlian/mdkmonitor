@@ -7,6 +7,7 @@ import { TodayStatsModal } from "./components/TodayStatsModal";
 import { MachineCard } from "./components/MachineCard";
 import { ClientWrapper } from "./components/ClientWrapper";
 import { getBuildDate } from "../lib/build-info";
+import { StatsTable } from "./components/StatsTable";
 
 export default function Home() {
   const [machines, setMachines] = useState<Machine[]>([]);
@@ -16,6 +17,7 @@ export default function Home() {
   const [deletingName, setDeletingName] = useState<string | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [todayStatsMachine, setTodayStatsMachine] = useState<Machine | null>(null);
+  const [mainTab, setMainTab] = useState<'machines' | 'stats'>('machines');
 
   useEffect(() => {
     const fetchMachines = async () => {
@@ -134,20 +136,40 @@ export default function Home() {
             Build: {getBuildDate()}
           </div>
         </div>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {machines.map((machine) => (
-            <MachineCard
-              key={machine.id}
-              machine={machine}
-              activeTab={activeTabs[machine.id]}
-              onTabChange={handleTabChange}
-              onDelete={handleDelete}
-              onViewDetails={handleViewDetails}
-              onViewTodayStats={handleViewTodayStats}
-              deletingName={deletingName}
-            />
-          ))}
+        {/* Main Tabs */}
+        <div className="flex space-x-2 mb-6">
+          <button
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${mainTab === 'machines' ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+            onClick={() => setMainTab('machines')}
+          >
+            机器卡片
+          </button>
+          <button
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${mainTab === 'stats' ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+            onClick={() => setMainTab('stats')}
+          >
+            统计表格
+          </button>
         </div>
+        {mainTab === 'machines' && (
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {machines.map((machine) => (
+              <MachineCard
+                key={machine.id}
+                machine={machine}
+                activeTab={activeTabs[machine.id]}
+                onTabChange={handleTabChange}
+                onDelete={handleDelete}
+                onViewDetails={handleViewDetails}
+                onViewTodayStats={handleViewTodayStats}
+                deletingName={deletingName}
+              />
+            ))}
+          </div>
+        )}
+        {mainTab === 'stats' && (
+          <StatsTable machines={machines} />
+        )}
         {selectedMachine && (
           <MachineDetailsModal
             machine={selectedMachine}
