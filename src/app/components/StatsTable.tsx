@@ -144,6 +144,16 @@ export function StatsTable({ machines, columnOrder }: StatsTableProps) {
     if (sortColumn === "Machine") {
       aValue = a.name;
       bValue = b.name;
+    } else if (sortColumn === "Version") {
+      aValue = a.type;
+      bValue = b.type;
+
+      //compare version by string
+      const aVersion = aValue.toString();
+      const bVersion = bValue.toString();
+      return sortDirection === "asc"
+        ? aVersion.localeCompare(bVersion)
+        : bVersion.localeCompare(aVersion);
     } else {
       try {
         const aStats = parseTodayStats(a.todaystat);
@@ -229,6 +239,14 @@ export function StatsTable({ machines, columnOrder }: StatsTableProps) {
                 Machine {getSortIcon("Machine")}
               </div>
             </th>
+            <th
+              className="px-4 py-3 text-left text-sm font-medium text-gray-400 bg-gray-800/30 cursor-pointer hover:bg-gray-700/30 transition-colors"
+              onClick={() => handleSort("Version")}
+            >
+              <div className="flex items-center gap-2">
+                Version {getSortIcon("Version")}
+              </div>
+            </th>
             {statKeys.map((statKey) => (
               <th
                 key={statKey}
@@ -263,6 +281,10 @@ export function StatsTable({ machines, columnOrder }: StatsTableProps) {
                 <td className="px-4 py-3 text-sm font-medium text-gray-300 border-r border-gray-800/30">
                   {machine.name}
                 </td>
+                <td className="px-4 py-3 text-sm text-gray-300 border-r border-gray-800/30">
+                  {machine.type}
+                </td>
+
                 {statKeys.map((statKey) => {
                   try {
                     const stats = parseTodayStats(machine.todaystat);
