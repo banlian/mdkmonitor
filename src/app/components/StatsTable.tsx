@@ -56,6 +56,18 @@ const isToday = (dateString: string): boolean => {
   }
 };
 
+const isDateString = (value: string): boolean => {
+  // Check if it's a datetime string by regex 2025-07-19 10:00:00
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value.trim())) {
+    return true;
+  }
+  // Also check for date-only format 2025-07-19
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+    return true;
+  }
+  return false;
+};
+
 // Function to get sortable value for a cell
 const getSortableValue = (value: string): number => {
   if (value.startsWith("AI")) return NaN;
@@ -144,8 +156,28 @@ export function StatsTable({ machines, columnOrder }: StatsTableProps) {
       }
     }
 
-    const aNum = getSortableValue(aValue.toString());
-    const bNum = getSortableValue(bValue.toString());
+    const aStr = aValue.toString();
+    const bStr = bValue.toString();
+
+    // Check for datetime values first
+    const aIsDate = isDateString(aStr);
+    const bIsDate = isDateString(bStr);
+
+    if (aIsDate && bIsDate) {
+      const aDate = new Date(aStr);
+      const bDate = new Date(bStr);
+      return sortDirection === "asc"
+        ? aDate.getTime() - bDate.getTime()
+        : bDate.getTime() - aDate.getTime();
+    } else if (aIsDate) {
+      return -1; // a is date, b is not, a comes first
+    } else if (bIsDate) {
+      return 1; // b is date, a is not, b comes first
+    }
+
+    // Check for numeric values
+    const aNum = getSortableValue(aStr);
+    const bNum = getSortableValue(bStr);
 
     if (!isNaN(aNum) && !isNaN(bNum)) {
       return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
@@ -153,11 +185,11 @@ export function StatsTable({ machines, columnOrder }: StatsTableProps) {
       return -1; // a 有效，b 无效，a 靠前
     } else if (!isNaN(bNum)) {
       return 1; // b 有效，a 无效，b 靠前
-    } else {
-      // 都无效，按字符串
-      const comparison = aValue.toString().localeCompare(bValue.toString());
-      return sortDirection === "asc" ? comparison : -comparison;
     }
+
+    // Both are non-numeric, non-date strings - compare as strings
+    const comparison = aStr.localeCompare(bStr);
+    return sortDirection === "asc" ? comparison : -comparison;
   });
 
   const handleSort = (column: string) => {
