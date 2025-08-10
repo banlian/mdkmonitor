@@ -10,4 +10,9 @@ export interface Machine {
   defectsettings: string;
   systemsettings: string;
   todaystat: string;
+  cpulist: string;  
+  memlist: string;
+  vendor: string;
+  customer:string;
+  winversion:string;
 } 
