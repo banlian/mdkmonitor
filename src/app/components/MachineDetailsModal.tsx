@@ -339,9 +339,9 @@ export const MachineDetailsModal = ({
                     //filter cpuData toady only
 
                     const todayCpuData = cpuData.filter((item) => {
-                      const today = new Date();
+                      const today = new Date(2025, 1, 1);
                       const itemDate = new Date(item.timestamp);
-                      return itemDate.toDateString() === today.toDateString();
+                      return itemDate > today;    
                     });
 
                     // Get time range
@@ -562,9 +562,9 @@ export const MachineDetailsModal = ({
                     
                     //filter memdata toady only
                     const todayMemData = memData.filter((item) => {
-                      const today = new Date();
+                      const today = new Date(2025,1,1);
                       const itemDate = new Date(item.timestamp);
-                      return itemDate.toDateString() === today.toDateString();
+                      return itemDate > today;
                     });
 
                     // Get time range
