@@ -427,11 +427,11 @@ export const MachineDetailsModal = ({
                                 ((prevItem.timestamp - minTime) / timeRange) *
                                   80 +
                                 10; // 80% width + 10% padding
-                              const y1 = prevItem.cpu;
+                              const y1 = 100 - prevItem.cpu;
                               const x2 =
                                 ((item.timestamp - minTime) / timeRange) * 80 +
                                 10;
-                              const y2 = item.cpu;
+                              const y2 = 100 - item.cpu;
 
                               const stateColor =
                                 item.state === 0
@@ -472,7 +472,7 @@ export const MachineDetailsModal = ({
                                   ((firstItem.timestamp - minTime) / timeRange) *
                                     80 +
                                   10;
-                                const y = 100 - (firstItem.state / 3) * 100;
+                                const y = firstItem.cpu;
                                 const stateColor =
                                   firstItem.state === 0
                                     ? "#6b7280"
