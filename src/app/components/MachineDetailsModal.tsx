@@ -336,8 +336,16 @@ export const MachineDetailsModal = ({
                       }))
                       .sort((a, b) => a.timestamp - b.timestamp);
 
+                    //filter cpuData toady only
+
+                    const todayCpuData = cpuData.filter((item) => {
+                      const today = new Date();
+                      const itemDate = new Date(item.timestamp);
+                      return itemDate.toDateString() === today.toDateString();
+                    });
+
                     // Get time range
-                    const allTimestamps = cpuData.map((item) => item.timestamp);
+                    const allTimestamps = todayCpuData.map((item) => item.timestamp);
                     const minTime = Math.min(...allTimestamps);
                     const maxTime = Math.max(...allTimestamps);
                     const timeRange = maxTime - minTime;
@@ -551,9 +559,16 @@ export const MachineDetailsModal = ({
                         timestamp: new Date(item.ts).getTime(),
                       }))
                       .sort((a, b) => a.timestamp - b.timestamp);
+                    
+                    //filter memdata toady only
+                    const todayMemData = memData.filter((item) => {
+                      const today = new Date();
+                      const itemDate = new Date(item.timestamp);
+                      return itemDate.toDateString() === today.toDateString();
+                    });
 
                     // Get time range
-                    const allTimestamps = memData.map((item) => item.timestamp);
+                    const allTimestamps = todayMemData.map((item) => item.timestamp);
                     const minTime = Math.min(...allTimestamps);
                     const maxTime = Math.max(...allTimestamps);
                     const timeRange = maxTime - minTime;
